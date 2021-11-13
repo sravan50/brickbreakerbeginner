@@ -23,15 +23,11 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 
 	private static final int brickBreadth = 30;
 	private static final int brickHeight = 20;
-	// variables declaration for brick...............................
-	// ===============================================================
-	// declaring ball, paddle,bricks
 	private Rectangle Ball;//
 	private Rectangle Bat;//
 	private Rectangle[] Brick;
 	private Rectangle background = new Rectangle(0, 0, 350, 450);
 
-//reverses......==>
 	private int movex = -1;
 	private int movey = -1;
 	private boolean ballFallDown = false;
@@ -52,17 +48,12 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 		JFrame frame = new JFrame();
 		button = new JButton(STATUS.START.name());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
 		// using this as parent layout exists (JFrame)
 		this.setPreferredSize(new Dimension(background.width, background.height));
 		frame.getContentPane().add(this);
 		frame.pack();
-
 		frame.add(button, BorderLayout.SOUTH);
-//		frame.setLocationRelativeTo(null);
-//		frame.setResizable(false);
 		frame.setVisible(true);
-
 		button.addActionListener(this);
 
 		this.addKeyListener(this);
@@ -74,8 +65,6 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 		new BrickBreaker();
 
 	}
-
-	// declaring ball, paddle,bricks
 
 	public void paint(Graphics g) {
 		g.setColor(Color.LIGHT_GRAY);
@@ -108,21 +97,14 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 
 	}
 
-	// /...Game Loop...................
-
-	// /////////////////// When ball strikes borders......... it
-
+	// Game Loop
 	public void run() {
-
-		// == ball reverses when touches the brick=======
-//ballFallDown == false && bricksOver == false
 		while (RUNNING) {
 			if (PAUSE) {
 				sleep();
 				continue;
 			}
 
-//   if(gameOver == true){return;}
 			for (int i = 0; i < Brick.length; i++) {
 				if (Brick[i] != null) {
 					if (Brick[i].intersects(Ball)) {
@@ -134,14 +116,11 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 				} // end of 1st if..
 			} // end of for loop..
 
-			// /////////// =================================
-
 			if (count == Brick.length) {// check if ball hits all bricks
 				bricksOver = true;
 				status = "YOU WON THE GAME";
 				repaint();
 			}
-			// /////////// =================================
 			repaint();
 			Ball.x += movex;
 			Ball.y += movey;
@@ -163,10 +142,8 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 			// /===== Ball reverses when strikes the bat
 			if (Ball.intersects(Bat)) {
 				movey = -movey;
-				// if(Ball.y + Ball.width >=Bat.y)
 			}
-			// //=====================================
-			// ....ball reverses when touches left and right boundary
+			// ball reverses when touches left and right boundary
 			if (Ball.x <= 0 || background.width - Ball.width <= Ball.x) {
 				movex = -movex;
 			} // if ends here
@@ -185,7 +162,7 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 		} // while loop ends here
 
 	}
-	
+
 	private void sleep() {
 		try {
 			Thread.sleep(10);
@@ -193,9 +170,7 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 		} // try catch ends here
 	}
 
-	// loop ends here
-
-	// ///////..... HANDLING KEY EVENTS................//
+	// HANDLING KEY EVENTS
 	@Override
 	public void keyPressed(KeyEvent e) {
 		int keyCode = e.getKeyCode();
@@ -269,9 +244,9 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 		Bat = new Rectangle(160, 245, 40, 5);
 
 		Brick = new Rectangle[12];
-		// //////////// =====Creating bricks for the game===>.....
+		// Creating bricks for the game
 		createBricks(brickx, bricky);
-		// ===========BRICKS created for the game new ready to use===
+		// BRICKS created for the game new ready to use
 		movex = -1;
 		movey = -1;
 		ballFallDown = false;
@@ -281,12 +256,11 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 
 	}
 
+	/**
+	 * Creating bricks for the game:- creating bricks again because this for loop is
+	 * out of while loop in run method
+	 */
 	public void createBricks(int brickx, int bricky) {
-		// //////////// =====Creating bricks for the game===>.....
-		/*
-		 * creating bricks again because this for loop is out of while loop in run
-		 * method
-		 */
 		for (int i = 0; i < Brick.length; i++) {
 			Brick[i] = new Rectangle(brickx, bricky, brickBreadth, brickHeight);
 			if (i == 5) {
