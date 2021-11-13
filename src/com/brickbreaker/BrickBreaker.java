@@ -17,22 +17,29 @@ import javax.swing.JPanel;
 
 public class BrickBreaker extends JPanel implements KeyListener, ActionListener, Runnable {
 	private static final long serialVersionUID = 1L;
-	// movement keys..
+
+	private static final int GAME_PAD_HEIGHT = 200;
+	private static final Dimension WINDOW_DIMINSIONS = new Dimension(350, 450);
+	private static final Dimension GAME_SCREEN_DIMINSIONS = new Dimension(350, WINDOW_DIMINSIONS.height - GAME_PAD_HEIGHT);
 	private static boolean right = false;
 	private static boolean left = false;
+	private static final int BRICK_BREADTH = 30;
+	private static final int BRICK_HEIGHT = 20;
+	private static boolean PAUSE = false;
+	private static boolean RUNNING = false;
 
-	private static final int brickBreadth = 30;
-	private static final int brickHeight = 20;
-	private Rectangle Ball;//
-	private Rectangle Bat;//
-	private Rectangle[] Brick;
-	private Rectangle background = new Rectangle(0, 0, 350, 450);
-
-	private int movex = -1;
-	private int movey = -1;
+	private static int movex = -1;
+	private static int movey = -1;
+	private static final int BAT_SPEED = 3;
 	private boolean ballFallDown = false;
 	private boolean bricksOver = false;
-	private int count = 0;
+	private static int count = 0;
+
+	
+	private Rectangle Ball;
+	private Rectangle Bat;
+	private Rectangle[] Brick;
+	private Rectangle gameScreen;
 	private String status;
 	private JButton button;
 
@@ -40,8 +47,6 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 		START, PAUSE, RESUME, STOP
 	}
 
-	private static boolean PAUSE = false;
-	private static boolean RUNNING = false;
 
 	BrickBreaker() {
 		initializeVariables();
@@ -49,7 +54,7 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 		button = new JButton(STATUS.START.name());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// using this as parent layout exists (JFrame)
-		this.setPreferredSize(new Dimension(background.width, background.height));
+		this.setPreferredSize(WINDOW_DIMINSIONS);
 		frame.getContentPane().add(this);
 		frame.pack();
 		frame.add(button, BorderLayout.SOUTH);
@@ -68,7 +73,7 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 
 	public void paint(Graphics g) {
 		g.setColor(Color.LIGHT_GRAY);
-		g.fillRect(background.x, background.y, background.width, background.height);
+		g.fillRect(gameScreen.x, gameScreen.y, gameScreen.width, gameScreen.height);
 		g.setColor(Color.blue);
 		g.fillOval(Ball.x, Ball.y, Ball.width, Ball.height);
 		g.setColor(Color.green);
@@ -76,11 +81,11 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 
 		// this will paint below the peddle
 		g.setColor(Color.GRAY);
-		g.fillRect(0, 251, background.width, 200);
+		g.fillRect(gameScreen.x, gameScreen.height, gameScreen.width, GAME_PAD_HEIGHT);
 
 		// this will draw border line
 		g.setColor(Color.RED);
-		g.drawRect(0, 0, background.width - 1, 250);
+		g.drawRect(gameScreen.x, gameScreen.y, gameScreen.width - 1, gameScreen.height);
 		for (int i = 0; i < Brick.length; i++) {
 			if (Brick[i] != null) {
 				g.fill3DRect(Brick[i].x, Brick[i].y, Brick[i].width, Brick[i].height, true);
@@ -125,32 +130,26 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 			Ball.x += movex;
 			Ball.y += movey;
 
-			if (left == true) {
-
-				Bat.x -= 3;
+			if (left == true && Bat.x >= gameScreen.x) {
+				Bat.x -= BAT_SPEED;
 				right = false;
 			}
-			if (right == true) {
-				Bat.x += 3;
+			if (right == true && Bat.x <= gameScreen.width - Bat.width) {
+				Bat.x += BAT_SPEED;
 				left = false;
-			}
-			if (Bat.x <= 4) {
-				Bat.x = 4;
-			} else if (Bat.x >= background.width) {
-				Bat.x = background.width;
 			}
 			// /===== Ball reverses when strikes the bat
 			if (Ball.intersects(Bat)) {
 				movey = -movey;
 			}
 			// ball reverses when touches left and right boundary
-			if (Ball.x <= 0 || background.width - Ball.width <= Ball.x) {
+			if (Ball.x <= gameScreen.x || gameScreen.width - Ball.width <= Ball.x) {
 				movex = -movex;
 			} // if ends here
-			if (Ball.y <= 0) {// ////////////////|| bally + Ball.height >= 250
+			if (Ball.y <= gameScreen.y) {// ////////////////|| bally + Ball.height >= 250
 				movey = -movey;
 			} // if ends here.....
-			if (Ball.y >= 250) {// when ball falls below bat game is over...
+			if (Ball.y >= gameScreen.height) {// when ball falls below bat game is over...
 				ballFallDown = true;
 				status = "YOU LOST THE GAME";
 				repaint();
@@ -233,19 +232,21 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 	}
 
 	public void initializeVariables() {
-		// default size of a brick...............................
-		int brickx = 70;
-		int bricky = 50;
+		// x = 0, y = 0, width = 350, height = 450.
+		gameScreen = new Rectangle(GAME_SCREEN_DIMINSIONS);
 		RUNNING = true;
-		// x = 160, y = 218, width = 5, height = 5
-		Ball = new Rectangle(160 + 18, 245 - 5, 5, 5);
-		// x = 160, y = 245, width = 40, height = 5
 
+		// x = 160, y = 245, width = 40, height = 5
 		Bat = new Rectangle(160, 245, 40, 5);
 
+		// initial ball position.
+		// x = 160, y = 218, width = 5, height = 5
+		Ball = new Rectangle(Bat.x + 18, Bat.y - 5, 5, 5);
+
+
 		Brick = new Rectangle[12];
-		// Creating bricks for the game
-		createBricks(brickx, bricky);
+		// Creating bricks for the game, with size width = 70, height = 50
+		createBricks(70, 50);
 		// BRICKS created for the game new ready to use
 		movex = -1;
 		movey = -1;
@@ -262,18 +263,18 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 	 */
 	public void createBricks(int brickx, int bricky) {
 		for (int i = 0; i < Brick.length; i++) {
-			Brick[i] = new Rectangle(brickx, bricky, brickBreadth, brickHeight);
+			Brick[i] = new Rectangle(brickx, bricky, BRICK_BREADTH, BRICK_HEIGHT);
 			if (i == 5) {
 				brickx = 70;
-				bricky = (bricky + brickHeight + 2);
+				bricky = (bricky + BRICK_HEIGHT + 2);
 
 			}
 			if (i == 9) {
 				brickx = 100;
-				bricky = (bricky + brickHeight + 2);
+				bricky = (bricky + BRICK_HEIGHT + 2);
 
 			}
-			brickx += (brickBreadth + 1);
+			brickx += (BRICK_BREADTH + 1);
 		}
 	}
 
