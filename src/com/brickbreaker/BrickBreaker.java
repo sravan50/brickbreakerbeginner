@@ -24,7 +24,6 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 	private static final int CONTROL_LAYOUT_HEIGHT = 200;
 	private static final int BALL_SIZE = 10;
 
-
 	private static final Dimension WINDOW_DIMINSIONS = new Dimension(WINDOWS_WIDTH, WINDOWS_HEIGHT);
 	private static final Dimension CANVAS_DIMINSIONS = new Dimension(WINDOWS_WIDTH,
 			WINDOW_DIMINSIONS.height - CONTROL_LAYOUT_HEIGHT);
@@ -34,12 +33,16 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 	private static boolean left = false;
 	private static final int BRICK_BREADTH = 30;
 	private static final int BRICK_HEIGHT = 20;
+	private static final int BAT_HEIGHT = 5;
+	private static final int BAT_WIDTH = 40;
+
 	private static boolean PAUSE = false;
 	private static boolean RUNNING = false;
 
 	private static int movex = -1;
 	private static int movey = -1;
 	private static final int BAT_SPEED = 3;
+
 	private boolean ballFallDown = false;
 	private boolean bricksOver = false;
 	private static int count = 0;
@@ -245,11 +248,13 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 		RUNNING = true;
 
 		// x = 160, y = 245, width = 40, height = 5
-		Bat = new Rectangle(160, 245, 40, 5);
+//		Bat = new Rectangle(160, 245, 40, 5);
+		Point batCoordinates = getPosition(gameScreen.x, gameScreen.width, gameScreen.height, BAT_WIDTH, BAT_HEIGHT);
 
+		Bat = new Rectangle(batCoordinates.x, batCoordinates.y, BAT_WIDTH, BAT_HEIGHT);
 		// initial ball position.
 		// x = 160, y = 218, width = 5, height = 5
-		Point ballCoordinates = ballPosition(Bat.x, Bat.x + Bat.width, Bat.y, BALL_SIZE);
+		Point ballCoordinates = getPosition(Bat.x, Bat.x + Bat.width, Bat.y, BALL_SIZE, BALL_SIZE);
 		Ball = new Rectangle(ballCoordinates.x, ballCoordinates.y, BALL_SIZE, BALL_SIZE);
 
 		Brick = new Rectangle[12];
@@ -265,12 +270,12 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 
 	}
 
-	private Point ballPosition(int batStart, int batEnd, int batYAxis, int ballSize) {
+	private Point getPosition(int startPosition, int endPosition, int yAxis, int width, int height) {
 		Point point = null;
-		if (batStart < batEnd) {
-			int batMedian = (batEnd + batStart) / 2;
-			int ballMedian = ballSize / 2;
-			point = new Point(batMedian - ballMedian, batYAxis - ballSize);
+		if (startPosition < endPosition) {
+			int totalWidthMedian = (endPosition + startPosition) / 2;
+			int objectWidthMedian = width / 2;
+			point = new Point(totalWidthMedian - objectWidthMedian, yAxis - height);
 		}
 		return point;
 	}
