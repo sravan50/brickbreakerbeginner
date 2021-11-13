@@ -67,6 +67,7 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 
 		this.addKeyListener(this);
 		this.setFocusable(true);
+		button.setFocusable(false);
 	}
 
 	public static void main(String[] args) {
@@ -156,8 +157,8 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 			}
 			if (Bat.x <= 4) {
 				Bat.x = 4;
-			} else if (Bat.x >= 298) {
-				Bat.x = 298;
+			} else if (Bat.x >= background.width) {
+				Bat.x = background.width;
 			}
 			// /===== Ball reverses when strikes the bat
 			if (Ball.intersects(Bat)) {
@@ -250,7 +251,7 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 	}
 
 	public void startGame() {
-		requestFocus(true);
+		requestFocusInWindow(true);
 		initializeVariables();
 		Thread t = new Thread(this);
 		t.start();
@@ -262,7 +263,7 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 		int bricky = 50;
 		RUNNING = true;
 		// x = 160, y = 218, width = 5, height = 5
-		Ball = new Rectangle(160, 218, 5, 5);
+		Ball = new Rectangle(160 + 18, 245 - 5, 5, 5);
 		// x = 160, y = 245, width = 40, height = 5
 
 		Bat = new Rectangle(160, 245, 40, 5);
