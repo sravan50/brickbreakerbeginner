@@ -22,6 +22,8 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 	private static final int WINDOWS_WIDTH = 350;
 	private static final int WINDOWS_HEIGHT = 450;
 	private static final int CONTROL_LAYOUT_HEIGHT = 200;
+	private static final int BALL_SIZE = 10;
+
 
 	private static final Dimension WINDOW_DIMINSIONS = new Dimension(WINDOWS_WIDTH, WINDOWS_HEIGHT);
 	private static final Dimension CANVAS_DIMINSIONS = new Dimension(WINDOWS_WIDTH,
@@ -247,9 +249,8 @@ public class BrickBreaker extends JPanel implements KeyListener, ActionListener,
 
 		// initial ball position.
 		// x = 160, y = 218, width = 5, height = 5
-		int ballDimensions = 10;
-		Point ballCoordinates = ballPosition(Bat.x, Bat.x + Bat.width, Bat.y, ballDimensions);
-		Ball = new Rectangle(ballCoordinates.x, ballCoordinates.y, ballDimensions, ballDimensions);
+		Point ballCoordinates = ballPosition(Bat.x, Bat.x + Bat.width, Bat.y, BALL_SIZE);
+		Ball = new Rectangle(ballCoordinates.x, ballCoordinates.y, BALL_SIZE, BALL_SIZE);
 
 		Brick = new Rectangle[12];
 		// Creating bricks for the game, with size width = 70, height = 50
